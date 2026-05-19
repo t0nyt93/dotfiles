@@ -1,7 +1,8 @@
 -- ========================================================================== --
 -- 1. GLOBAL INITIALIZATION & BOOTSTRAP                                       --
 -- ========================================================================== --
-vim.g.mapleader = "\\" 
+vim.g.mapleader = "\\"
+vim.g.maplocalleader = "\\"
 
 -- Load your basic lazy bootstrap if you have one inside config/lazy
 pcall(require, "config.lazy")
@@ -179,9 +180,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
     map("n", "gd", vim.lsp.buf.definition, map_opts)
     map("n", "gt", vim.lsp.buf.type_definition, map_opts)
     map("n", "gi", vim.lsp.buf.implementation, map_opts)
+
     map("n", "gr", vim.lsp.buf.references, map_opts)
     map("n", "<Leader>A", vim.diagnostic.goto_next, map_opts)
-    
+
     -- Native documentation hover (Replaces your complex legacy VimScript functions) [1]
     map("n", "K", vim.lsp.buf.hover, map_opts)
   end,

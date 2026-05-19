@@ -8,7 +8,6 @@ return {
       ensure_installed = {
         "stylua",    -- Formatter for Lua
         "prettier",  -- Formatter for JS/TS/HTML/CSS/Markdown
-        "luacheck",  -- Linter for Lua
       },
     },
   },
@@ -38,25 +37,5 @@ return {
       })
     end,
   },
-
-  -- 3. Setup Linting (nvim-lint)
-  {
-    "mfussenegger/nvim-lint",
-    event = { "BufReadPost", "BufNewFile" }, -- Run when opening a file
-    config = function()
-      local lint = require("lint")
-
-      lint.linters_by_ft = {
-        lua = { "luacheck" },
-      }
-
-      -- Create an automatic command to run the linter on save/insert leave
-      vim.api.nvim_create_autocmd({ "BufWritePost", "BufLeave" }, {
-        callback = function()
-          lint.try_lint()
-        end,
-      })
-    end,
-  }
 }
 
