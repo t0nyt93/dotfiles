@@ -1,74 +1,23 @@
 -- ========================================================================== --
--- 1. LAZY.NVIM BOOTSTRAPPER (Auto-downloads manager if missing)              --
+-- 1. GLOBAL INITIALIZATION & BOOTSTRAP                                       --
 -- ========================================================================== --
----- Note: Mapleader needs to be defined if you use <Leader> keys
-vim.g.mapleader = "\\" -- Adjust this if your leader is something else (e.g. ",")
- 
---
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.uv.fs_stat(lazypath) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com",
-    "--branch=stable",
-    lazypath,
-  })
-end
-vim.opt.rtp:prepend(lazypath)
+vim.g.mapleader = "\\" 
 
-require("lazy").setup({
-  -- Themes and UI
-  { "sainnhe/edge" },
-  { "EdenEast/nightfox.nvim" },
-  { "catppuccin/nvim", name = "catppuccin" }, -- 'as' becomes 'name'
-  { "nvim-lualine/lualine.nvim", dependencies = { "nvim-tree/nvim-web-devicons" } },
-
-  -- Fuzzy Finder (Telescope)
-  { "nvim-telescope/telescope.nvim", dependencies = { "nvim-lua/plenary.nvim" } },
-
-  -- Git and Utilities
-  { "tpope/vim-fugitive" },
-  { "ruanyl/vim-gh-line" },
-  { "folke/snacks.nvim" },
-  { "moll/vim-bbye" },
-
-  -- Languages and LSP
-  { "myakove/homeassistant-nvim" },
-  { "neoclide/coc.nvim", branch = "release" }, -- CoC requires the release branch
-  { "stevearc/conform.nvim" },
-
-  -- Treesitter (Syntax)
-  { 
-    "nvim-treesitter/nvim-treesitter", 
-    lazy = false,
-    build = ":TSUpdate" -- 'do' becomes 'build'
-  },
-  { "nvim-treesitter/nvim-treesitter-context" },
-
-  -- Vim Scripts and Legacy Plugins
-  { "vim-scripts/CycleColor" },
-  { "preservim/nerdtree" },
-  { "jiangmiao/auto-pairs" },
-  { "JamshedVesuna/vim-markdown-preview" },
-})
-
-vim.cmd[[colorscheme nightfox]]
-
+-- Load your basic lazy bootstrap if you have one inside config/lazy
+pcall(require, "config.lazy")
 
 -- ========================================================================== --
--- 2. PLUGIN CONFIGURATIONS (Using your ported plugin list)                   --
+-- 2. SINGLE PLUGINS CONFIGURATION                                            --
 -- ========================================================================== --
 require("lazy").setup({
   -- Themes and UI
   { 
     "catppuccin/nvim", 
     name = "catppuccin",
-    lazy = false,    -- Load immediately
-    priority = 1000, -- Highest priority for themes
+    lazy = false,    
+    priority = 1000, 
     config = function()
-      vim.cmd.colorscheme("catppuccin-macchiato") -- Loads your chosen palette
+      vim.cmd.colorscheme("catppuccin-macchiato") 
     end
   },
   { "sainnhe/edge" },
@@ -88,10 +37,41 @@ require("lazy").setup({
   { "folke/snacks.nvim" },
   { "moll/vim-bbye" },
 
-  -- Languages and LSP
-  { "myakove/homeassistant-nvim" },
-  { "neoclide/coc.nvim", branch = "release" },
+  -- Native LSP Infrastructure
+  { "williamboman/mason.nvim" },
+  { "williamboman/mason-lspconfig.nvim" },
+  { "neovim/nvim-lspconfig" }, -- Provides default data configs for Neovim core [1]
   { "stevearc/conform.nvim" },
+
+  -- Native Completion Engine (Replaces CoC Popups)
+  {
+    "hrsh7th/nvim-cmp",
+    dependencies = {
+      "hrsh7th/cmp-nvim-lsp",
+      "hrsh7th/cmp-buffer",
+      "hrsh7th/cmp-path",
+    },
+    config = function()
+      -- This block now safely runs ONLY after the plugin is loaded
+      local cmp = require("cmp")
+      cmp.setup({
+        mapping = cmp.mapping.preset.insert({
+          ["<CR>"] = cmp.mapping.confirm({ select = true }),
+          ["<Tab>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then cmp.select_next_item() else fallback() end
+          end, { "i", "s" }),
+          ["<S-Tab>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then cmp.select_prev_item() else fallback() end
+          end, { "i", "s" }),
+        }),
+        sources = cmp.config.sources({
+          { name = "nvim-lsp" },
+          { name = "buffer" },
+          { name = "path" },
+        }),
+      })
+    end,
+  },
 
   -- Treesitter (Syntax)
   { 
@@ -108,9 +88,32 @@ require("lazy").setup({
 })
 
 -- ========================================================================== --
--- 3. GLOBAL OPTIONS & CORE SETTINGS (set/let replacements)                   --
+-- 3. NATIVE LSP & MASON CONFIGURATION (Neovim 0.11 System)                   --
 -- ========================================================================== --
-vim.opt.termguicolors = true   -- Required for modern themes like Catppuccin
+require("mason").setup()
+require("mason-lspconfig").setup({
+  -- Automatically install these servers via Mason
+  ensure_installed = { "lua_ls", "pyright", "ts_ls" },
+})
+
+-- Neovim 0.11 native server configuration [1]
+vim.lsp.config("lua_ls", {
+  settings = { Lua = { diagnostics = { globals = { "vim" } } } }
+})
+vim.lsp.config("pyright", {})
+vim.lsp.config("ts_ls", {})
+
+-- Explicitly activate the servers [1]
+vim.lsp.enable({ "lua_ls", "pyright", "ts_ls" })
+
+-- ========================================================================== --
+-- 4. NVIM-CMP COMPLETION SETUP (The new popup logic)                        --
+-- ========================================================================== --
+
+-- ========================================================================== --
+-- 5. GLOBAL OPTIONS & CORE SETTINGS                                          --
+-- ========================================================================== --
+vim.opt.termguicolors = true   
 vim.opt.backupcopy = "yes"
 vim.opt.cursorline = true
 vim.opt.autoread = true
@@ -124,51 +127,37 @@ vim.opt.foldmethod = "indent"
 vim.opt.foldcolumn = "1"
 vim.opt.foldlevelstart = 99
 vim.opt.listchars = { tab = "| " }
-
 vim.opt.list = true
 
--- Search exclusion lists (wildignore)
 vim.opt.wildignore:append({ "*/.git/*", "*/.idea/*", "*/.DS_Store/*", "*/node_modules/*", "*/coverage/*", "*/cdk.out/*" })
 
--- Global Variables (let g:)
+-- Markdown settings
 vim.g.vim_markdown_preview_github = 1
 vim.g.vim_markdown_preview_browser = "Brave Browser"
 vim.g.mkdp_echo_preview_url = 1
 vim.g.vim_markdown_preview_hotkey = "<C-m>"
-vim.g.coc_node_args = { "--max-old-space-size=4096" }
-vim.g.coc_global_extensions = { "coc-tsserver", "coc-prettier", "coc-eslint" }
-vim.g.coc_disable_transparent_cursor = 1
 
 -- ========================================================================== --
--- 4. CUSTOM KEYMAPPINGS (nnoremap / inoremap replacements)                  --
+-- 6. CUSTOM KEYMAPPINGS (Including Native LSP Remaps)                       --
 -- ========================================================================== --
-
 local map = vim.keymap.set
 local opts = { silent = true }
 
--- Buffer Actions
+-- Buffer & Window Actions
 map("n", "<Leader>q", ":Bdelete<CR>", opts)
 map("n", "<Leader>bn", ":bn<CR>", opts)
 map("n", "<Leader>bb", ":bp<CR>", opts)
 map("n", "<Leader>bp", ":b#<CR>", opts)
 map("n", "<Leader>l", ":ls<CR>", opts)
 map("n", "<Leader>bc", ":bp|bd #<CR>", opts)
-
--- Window Actions & Navigation
 map("t", "<Leader>w", "<C-w>w", opts)
 map("n", "<Leader>w", "<C-w>w", opts)
 
--- Quickfix Lists
+-- Utility Lists & Navigation
 map("n", "<Leader>co", ":copen<CR>", opts)
 map("n", "<Leader>cc", ":cclose<CR>", opts)
-
--- Formatting (Conform.nvim)
 map("n", "<Leader>f", ':lua require("conform").format()<CR>', opts)
-
--- NerdTree
 map("n", "<Leader>t", ":NERDTreeToggle<CR>", opts)
-
--- Help out future Tony when he fat fingers save.
 map("n", ":W", ":w")
 
 -- Telescope
@@ -181,101 +170,20 @@ map("n", "<Leader>ss", "<cmd>Telescope grep_string<CR>", opts)
 map("v", "<Leader>ss", '"zy<cmd>Telescope grep_string search=<C-r>z<CR>', opts)
 map("n", "<Leader>gb", ":Git blame<CR>", opts)
 
--- CoC Specific Core Maps
-map("n", "<Leader>vo", "<Plug>(coc-terminal-toggle)", opts)
-map("n", "gd", "<Plug>(coc-definition)", opts)
-map("n", "gt", "<Plug>(coc-type-definition)", opts)
-map("n", "gi", "<Plug>(coc-implementation)", opts)
-map("n", "gr", "<Plug>(coc-references)", opts)
-map("n", "<Leader>A", "<Plug>(coc-diagnostic-next)", opts)
+-- Native LSP Event Keymaps (Replaces CoC mappings dynamically when LSP connects) [1]
+vim.api.nvim_create_autocmd("LspAttach", {
+  callback = function(args)
+    local bufnr = args.buf
+    local map_opts = { buffer = bufnr, silent = true }
 
--- CoC Completion (Insert Mode Expressions)
-map("i", "<CR>", [[coc#pum#visible() ? coc#_select_confirm() : "\<C-g>u\<CR>"]], { expr = true, silent = true })
-map("i", "<Tab>", [[coc#pum#visible() ? coc#pum#next(1) : "\<Tab>"]], { expr = true })
-map("i", "<S-Tab>", [[coc#pum#visible() ? coc#pum#prev(1) : "\<S-Tab>"]], { expr = true })
-map("i", "<C-.>", [[coc#refresh()]], { expr = true, silent = true })
-
--- ========================================================================== --
--- 5. USER COMMANDS & COMPLEX VIMSCRIPT LOGIC                                 --
--- ========================================================================== --
--- Custom CoC Commands
-vim.api.nvim_create_user_command("Tsc", "call CocAction('runCommand', 'tsserver.watchBuild')", {})
-
--- CoC Documentation Hover Setup
-map("n", "K", ":call ShowDocumentation()<CR>", opts)
-vim.cmd([[
-  function! ShowDocumentation()
-    if CocAction('hasProvider', 'hover')
-      call CocActionAsync('doHover')
-    else
-      call feedkeys('K', 'in')
-    endif
-  endfunction
-]])
-
--- Alternative Documentation Map (A)
-map("n", "A", ":call ShowDocumentationAlt()<CR>", opts)
-vim.cmd([[
-  function! ShowDocumentationAlt()
-    if (index(['vim','help'], &filetype) >= 0)
-      execute 'h '.expand('<cword>')
-    elseif (coc#rpc#ready())
-      call CocActionAsync('doHover')
-    else
-      execute 'h '.expand('<cword>')
-    endif
-  endfunction
-]])
-
--- ========================================================================== --
--- 6. AUTOCOMMANDS & DESIGN HIGHLIGHTS                                        --
--- ========================================================================== --
-local autocmd = vim.api.nvim_create_autocmd
-local augroup = vim.api.nvim_create_augroup
-
--- Auto reload configuration changes (Now targets modern init.lua)
-local reload_group = augroup("ConfigReload", { clear = true })
-autocmd("BufWritePost", {
-  pattern = "init.lua",
-  command = "source %",
-  group = reload_group,
-})
-
--- External change updates
-local checktime_group = augroup("ExternalChanges", { clear = true })
-autocmd({ "FocusGained", "BufEnter" }, {
-  pattern = "*",
-  command = "checktime",
-  group = checktime_group,
-})
-
--- Custom Filetypes
-local filetype_group = augroup("CustomFiletypes", { clear = true })
-autocmd({ "BufNewFile", "BufRead" }, {
-  pattern = { "*.tsx", "*.jsx" },
-  command = "set filetype=typescriptreact",
-  group = filetype_group,
-})
-
--- Indentation defaults for YAML files
-autocmd("FileType", {
-  pattern = { "yaml", "yml" },
-  callback = function()
-    vim.opt_local.tabstop = 2
-    vim.opt_local.softtabstop = 2
-    vim.opt_local.shiftwidth = 2
-    vim.opt_local.expandtab = true
+    map("n", "gd", vim.lsp.buf.definition, map_opts)
+    map("n", "gt", vim.lsp.buf.type_definition, map_opts)
+    map("n", "gi", vim.lsp.buf.implementation, map_opts)
+    map("n", "gr", vim.lsp.buf.references, map_opts)
+    map("n", "<Leader>A", vim.diagnostic.goto_next, map_opts)
+    
+    -- Native documentation hover (Replaces your complex legacy VimScript functions) [1]
+    map("n", "K", vim.lsp.buf.hover, map_opts)
   end,
-  group = filetype_group,
 })
-
--- Highlight Customizations
-vim.cmd([[
-  highlight LineNr ctermfg=lightblue
-  highlight CocErrorHighlight ctermfg=1
-  highlight FgCocErrorFloatBgCocFloating ctermfg=1 guifg=#ff0000
-  highlight CocWarningHighlight ctermfg=10
-  highlight FgCocWarningFloatBgCocFloating ctermfg=3 guifg=#ff0000
-  hi link CocFloating Normal
-]])
 
