@@ -1,30 +1,44 @@
-# If you come from bash you might have to change your $PATH.
-#export PATH=$HOME/bin:/usr/local/bin:$PATH
-
-# Path to your oh-my-zsh installation.
-
-export ZSH="/home/atyrrell/.oh-my-zsh"
+export ZSH="/Users/atyrrell/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="half-life"
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#ff00ff,bg=cyan,bold,underline"
+
+# Customize our CLI Prompt
+PROMPT='%{$fg[yellow]%}[%D{%m/%f/%y} %D{%L:%M:%S}] '$PROMPT
 
 export ZSH_DISABLE_COMPFIX=true
 export NVM_DIR=~/.nvm
-export NODE_OPTIONS=--max-old-space-size=8192
 export TERM_COLOR=truecolor
-
-alias gitp="git log --pretty=oneline"
-#
 export FZF_DEFAULT_COMMAND='ag --path-to-ignore ~/.agignore ""'
 
-# Control Audio Output (brew install switchaudio-osx)
-alias useSpeakers="SwitchAudioSource -s \"MacBook Pro Speaker\""
-alias useYeti="SwitchAudioSource -s \"Yeti Stereo Microphone\""
-alias useJBL="SwitchAudioSource -s \"JBL LIVE FREE 2 TWS\""
+decode_jwt() {
+  echo "$1" | jq -R 'split(".") | .[0,1] | @base64d | fromjson'
+}
 
+
+[ -f ~/.zprofile ] && source ~/.zprofile
+
+
+
+# GIT ALIASES
+alias gitp="git log --pretty=oneline"
+alias git-commits='git log main.. --pretty=oneline | wc -l'
+alias gitp="git log --pretty=oneline"
+alias gitb="git branch --sort=-committerdate | sed -n '1,10p'"
+alias git-branches='git branch --sort=-committerdate | sed -n "1,15p"'
+
+# QOL
+alias vim=nvim
+alias python='python3'
+alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+alias z='zellij'
+
+
+export EDITOR=nvim
 
 function setterm {
 	# Escape the argument for printf formatting.
@@ -40,15 +54,6 @@ function setterm {
 	printf "\e]2;$title\a"  # Window title
 }
 
-# Set list of themes to pick from when loading at random
-# Setting this variable when ZSH_THEME=random will cause zsh to load
-# a theme from this variable instead of looking in $ZSH/themes/
-# If set to an empty array, this variable will have no effect.
-# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
-
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
-
 # Uncomment the following line to disable auto-setting terminal title.
 DISABLE_AUTO_TITLE="true"
 
@@ -57,23 +62,10 @@ DISABLE_AUTO_TITLE="true"
 # See https://github.com/ohmyzsh/ohmyzsh/issues/5765
 COMPLETION_WAITING_DOTS="true"
 
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# You can set one of the optional three formats:
-# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# or set a custom format using the strftime function format specifications,
-# see 'man strftime' for details.
-# HIST_STAMPS="mm/dd/yyyy"
-
 plugins=(
     git
-    zsh-syntax-highlighting
     zsh-autosuggestions
+    zsh-syntax-highlighting
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -85,7 +77,6 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 alias ha-sync='cd ~/Projects/ShoshoneNexus && ./scripts/ha-sync.sh'
-alias vim='nvim'
 
 #-----------------------------------
 # HOME ASSISTANT THINGS
@@ -105,13 +96,12 @@ if [ -z "$SSH_AUTH_SOCK" ]; then
      ssh-add ~/.ssh/id_ed25519 # Replace with the actual name of your key if different
 fi
 
-# Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
-
 source $ZSH/oh-my-zsh.sh
 
+# Source some other files that are machine dependeny...
+source ~/dotfiles/zsh/.zshrc_keys
+source ~/dotfiles/zsh/.zshrc_local
+
+
 # User configuration
-
-# export MANPATH="/usr/local/man:$MANPATH"
-
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv zsh)"
+source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh

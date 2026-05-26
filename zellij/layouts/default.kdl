@@ -1,0 +1,97 @@
+layout {
+    default_tab_template {
+        pane size=1 borderless=true {
+            plugin location="file:~/.config/zellij/plugins/zjstatus.wasm" {
+                format_left   "{mode} #[fg=#ECEFF4,bold]{session}"
+                format_center "{tabs}"
+                format_right  "{command_git_branch}  {datetime}"
+                format_space  ""
+
+                border_enabled  "false"
+
+                hide_frame_for_single_pane "true"
+
+                mode_normal        "#[bg=#81A1C1,fg=#2E3440,bold] {name} "
+                mode_tmux          "#[bg=#EBCB8B,fg=#2E3440,bold] {name} "
+                mode_locked        "#[bg=#BF616A,fg=#2E3440,bold] {name} "
+                mode_pane          "#[bg=#A3BE8C,fg=#2E3440,bold] {name} "
+                mode_tab           "#[bg=#B48EAD,fg=#2E3440,bold] {name} "
+                mode_resize        "#[bg=#D08770,fg=#2E3440,bold] {name} "
+                mode_scroll        "#[bg=#EBCB8B,fg=#2E3440,bold] {name} "
+                mode_search        "#[bg=#EBCB8B,fg=#2E3440,bold] {name} "
+                mode_move          "#[bg=#D08770,fg=#2E3440,bold] {name} "
+                mode_session       "#[bg=#B48EAD,fg=#2E3440,bold] {name} "
+                mode_default_to_mode "tmux"
+
+                tab_normal              "#[fg=#808080] {index}:{name} "
+                tab_normal_fullscreen   "#[fg=#808080] {index}:{name} [] "
+                tab_normal_sync         "#[fg=#808080] {index}:{name} <> "
+                tab_active              "#[fg=#ECEFF4,bold] {index}:{name} "
+                tab_active_fullscreen   "#[fg=#ECEFF4,bold] {index}:{name} [] "
+                tab_active_sync         "#[fg=#ECEFF4,bold] {index}:{name} <> "
+                tab_separator           "#[fg=#4C566A]|"
+
+                command_git_branch_command     "git rev-parse --abbrev-ref HEAD"
+                command_git_branch_format      "#[fg=#81A1C1,bold] {stdout}"
+                command_git_branch_interval    "10"
+                command_git_branch_rendermode  "static"
+
+                datetime          "#[fg=#ECEFF4] {format}"
+                datetime_format   "%H:%M"
+                datetime_timezone "America/Boise"
+            }
+        }
+        children
+        pane size=1 borderless=true {
+            plugin location="status-bar"
+        }
+    }
+
+    tab_template name="ui" {
+        pane size=1 borderless=true {
+            plugin location="file:~/.config/zellij/plugins/zjstatus.wasm" {
+                format_left   "{mode} #[fg=#ECEFF4,bold]{session}"
+                format_center "{tabs}"
+                format_right  "{command_git_branch}  {datetime}"
+                format_space  ""
+
+                border_enabled  "false"
+
+                hide_frame_for_single_pane "true"
+
+                mode_normal        "#[bg=#81A1C1,fg=#2E3440,bold] {name} "
+                mode_tmux          "#[bg=#EBCB8B,fg=#2E3440,bold] {name} "
+                mode_locked        "#[bg=#BF616A,fg=#2E3440,bold] {name} "
+                mode_pane          "#[bg=#A3BE8C,fg=#2E3440,bold] {name} "
+                mode_tab           "#[bg=#B48EAD,fg=#2E3440,bold] {name} "
+                mode_resize        "#[bg=#D08770,fg=#2E3440,bold] {name} "
+                mode_scroll        "#[bg=#EBCB8B,fg=#2E3440,bold] {name} "
+                mode_search        "#[bg=#EBCB8B,fg=#2E3440,bold] {name} "
+                mode_move          "#[bg=#D08770,fg=#2E3440,bold] {name} "
+                mode_session       "#[bg=#B48EAD,fg=#2E3440,bold] {name} "
+                mode_default_to_mode "tmux"
+
+                tab_normal              "#[fg=#808080] {index}:{name} "
+                tab_normal_fullscreen   "#[fg=#808080] {index}:{name} [] "
+                tab_normal_sync         "#[fg=#808080] {index}:{name} <> "
+                tab_active              "#[fg=#ECEFF4,bold] {index}:{name} "
+                tab_active_fullscreen   "#[fg=#ECEFF4,bold] {index}:{name} [] "
+                tab_active_sync         "#[fg=#ECEFF4,bold] {index}:{name} <> "
+                tab_separator           "#[fg=#4C566A]|"
+
+                command_git_branch_command     "git rev-parse --abbrev-ref HEAD"
+                command_git_branch_format      "#[fg=#81A1C1,bold] {stdout}"
+                command_git_branch_interval    "10"
+                command_git_branch_rendermode  "static"
+
+                datetime          "#[fg=#ECEFF4] {format}"
+                datetime_format   "%H:%M"
+                datetime_timezone "America/Boise"
+            }
+        }
+        children
+        pane size=1 borderless=true {
+            plugin location="status-bar"
+        }
+    }
+}

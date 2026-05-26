@@ -1,2 +1,5 @@
 **/*.bak
 *.bak
+
+zsh/.zshrc_keys
+zsh/.zshrc_local
