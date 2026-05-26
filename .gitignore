@@ -3,3 +3,5 @@
 
 zsh/.zshrc_keys
 zsh/.zshrc_local
+
+zellij/plugins/*

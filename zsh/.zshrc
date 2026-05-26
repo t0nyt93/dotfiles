@@ -5,7 +5,10 @@ export ZSH="/Users/atyrrell/.oh-my-zsh"
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="half-life"
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#ff00ff,bg=cyan,bold,underline"
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=244,italics"
+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+ZSH_AUTOSUGGEST_USE_ASYNC=true
+ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd history)
 
 # Customize our CLI Prompt
 PROMPT='%{$fg[yellow]%}[%D{%m/%f/%y} %D{%L:%M:%S}] '$PROMPT
@@ -13,14 +16,13 @@ PROMPT='%{$fg[yellow]%}[%D{%m/%f/%y} %D{%L:%M:%S}] '$PROMPT
 export ZSH_DISABLE_COMPFIX=true
 export NVM_DIR=~/.nvm
 export TERM_COLOR=truecolor
-export FZF_DEFAULT_COMMAND='ag --path-to-ignore ~/.agignore ""'
+export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git"'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 decode_jwt() {
   echo "$1" | jq -R 'split(".") | .[0,1] | @base64d | fromjson'
 }
 
-
-[ -f ~/.zprofile ] && source ~/.zprofile
 
 
 
@@ -65,7 +67,6 @@ COMPLETION_WAITING_DOTS="true"
 plugins=(
     git
     zsh-autosuggestions
-    zsh-syntax-highlighting
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -89,14 +90,6 @@ export LOG_LEVEL="DEBUG"
 
 # END OF HOME ASSISTANT THINGS
 #-----------------------------------
-
-# Start ssh-agent if it's not already running
-if [ -z "$SSH_AUTH_SOCK" ]; then
-  eval "$(ssh-agent -s)"
-     ssh-add ~/.ssh/id_ed25519 # Replace with the actual name of your key if different
-fi
-
-source $ZSH/oh-my-zsh.sh
 
 # Source some other files that are machine dependeny...
 source ~/dotfiles/zsh/.zshrc_keys
