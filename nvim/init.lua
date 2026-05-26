@@ -1,91 +1,95 @@
--- ========================================================================== --
--- 1. GLOBAL INITIALIZATION & BOOTSTRAP                                       --
--- ========================================================================== --
-vim.g.mapleader = "\\"
-vim.g.maplocalleader = "\\"
-
--- Load your basic lazy bootstrap if you have one inside config/lazy
+-- Load our LAZY config from /lua/config/lazy.lua
 pcall(require, "config.lazy")
 
 -- ========================================================================== --
 -- 2. SINGLE PLUGINS CONFIGURATION                                            --
 -- ========================================================================== --
 require("lazy").setup({
-  -- Themes and UI
-  { 
-    "catppuccin/nvim", 
-    name = "catppuccin",
-    lazy = false,    
-    priority = 1000, 
-    config = function()
-      vim.cmd.colorscheme("catppuccin-macchiato") 
-    end
-  },
-  { "sainnhe/edge" },
-  { "EdenEast/nightfox.nvim" },
-  { 
-    "nvim-lualine/lualine.nvim", 
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    config = function() require("lualine").setup() end
-  },
+	-- Themes and UI
+	{
+		"catppuccin/nvim",
+		name = "catppuccin",
+		lazy = false,
+		priority = 1000,
+		config = function()
+			vim.cmd.colorscheme("catppuccin-macchiato")
+		end,
+	},
+	{ "sainnhe/edge" },
+	{ "EdenEast/nightfox.nvim" },
+	{
+		"nvim-lualine/lualine.nvim",
+		dependencies = { "nvim-tree/nvim-web-devicons" },
+		config = function()
+			require("lualine").setup()
+		end,
+	},
 
-  -- Fuzzy Finder (Telescope)
-  { "nvim-telescope/telescope.nvim", dependencies = { "nvim-lua/plenary.nvim" } },
+	-- Fuzzy Finder (Telescope)
+	{ "nvim-telescope/telescope.nvim", dependencies = { "nvim-lua/plenary.nvim" } },
 
-  -- Git and Utilities
-  { "tpope/vim-fugitive" },
-  { "ruanyl/vim-gh-line" },
-  { "folke/snacks.nvim" },
-  { "moll/vim-bbye" },
+	-- Git and Utilities
+	{ "tpope/vim-fugitive" },
+	{ "ruanyl/vim-gh-line" },
+	{ "folke/snacks.nvim" },
+	{ "moll/vim-bbye" },
 
-  -- Native LSP Infrastructure
-  { "williamboman/mason.nvim" },
-  { "williamboman/mason-lspconfig.nvim" },
-  { "neovim/nvim-lspconfig" }, -- Provides default data configs for Neovim core [1]
-  { "stevearc/conform.nvim" },
+	-- Native LSP Infrastructure
+	{ "williamboman/mason.nvim" },
+	{ "williamboman/mason-lspconfig.nvim" },
+	{ "neovim/nvim-lspconfig" }, -- Provides default data configs for Neovim core [1]
+	{ "stevearc/conform.nvim" },
 
-  -- Native Completion Engine (Replaces CoC Popups)
-  {
-    "hrsh7th/nvim-cmp",
-    dependencies = {
-      "hrsh7th/cmp-nvim-lsp",
-      "hrsh7th/cmp-buffer",
-      "hrsh7th/cmp-path",
-    },
-    config = function()
-      -- This block now safely runs ONLY after the plugin is loaded
-      local cmp = require("cmp")
-      cmp.setup({
-        mapping = cmp.mapping.preset.insert({
-          ["<CR>"] = cmp.mapping.confirm({ select = true }),
-          ["<Tab>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then cmp.select_next_item() else fallback() end
-          end, { "i", "s" }),
-          ["<S-Tab>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then cmp.select_prev_item() else fallback() end
-          end, { "i", "s" }),
-        }),
-        sources = cmp.config.sources({
-          { name = "nvim-lsp" },
-          { name = "buffer" },
-          { name = "path" },
-        }),
-      })
-    end,
-  },
+	-- Native Completion Engine (Replaces CoC Popups)
+	{
+		"hrsh7th/nvim-cmp",
+		dependencies = {
+			"hrsh7th/cmp-nvim-lsp",
+			"hrsh7th/cmp-buffer",
+			"hrsh7th/cmp-path",
+		},
+		config = function()
+			-- This block now safely runs ONLY after the plugin is loaded
+			local cmp = require("cmp")
+			cmp.setup({
+				mapping = cmp.mapping.preset.insert({
+					["<CR>"] = cmp.mapping.confirm({ select = true }),
+					["<Tab>"] = cmp.mapping(function(fallback)
+						if cmp.visible() then
+							cmp.select_next_item()
+						else
+							fallback()
+						end
+					end, { "i", "s" }),
+					["<S-Tab>"] = cmp.mapping(function(fallback)
+						if cmp.visible() then
+							cmp.select_prev_item()
+						else
+							fallback()
+						end
+					end, { "i", "s" }),
+				}),
+				sources = cmp.config.sources({
+					{ name = "nvim-lsp" },
+					{ name = "buffer" },
+					{ name = "path" },
+				}),
+			})
+		end,
+	},
 
-  -- Treesitter (Syntax)
-  { 
-    "nvim-treesitter/nvim-treesitter", 
-    build = ":TSUpdate"
-  },
-  { "nvim-treesitter/nvim-treesitter-context" },
+	-- Treesitter (Syntax)
+	{
+		"nvim-treesitter/nvim-treesitter",
+		build = ":TSUpdate",
+	},
+	{ "nvim-treesitter/nvim-treesitter-context" },
 
-  -- Vim Scripts and Legacy Plugins
-  { "vim-scripts/CycleColor" },
-  { "preservim/nerdtree" },
-  { "jiangmiao/auto-pairs" },
-  { "JamshedVesuna/vim-markdown-preview" },
+	-- Vim Scripts and Legacy Plugins
+	{ "vim-scripts/CycleColor" },
+	{ "preservim/nerdtree" },
+	{ "jiangmiao/auto-pairs" },
+	{ "JamshedVesuna/vim-markdown-preview" },
 })
 
 -- ========================================================================== --
@@ -93,13 +97,13 @@ require("lazy").setup({
 -- ========================================================================== --
 require("mason").setup()
 require("mason-lspconfig").setup({
-  -- Automatically install these servers via Mason
-  ensure_installed = { "lua_ls", "pyright", "ts_ls" },
+	-- Automatically install these servers via Mason
+	ensure_installed = { "lua_ls", "pyright", "ts_ls" },
 })
 
 -- Neovim 0.11 native server configuration [1]
 vim.lsp.config("lua_ls", {
-  settings = { Lua = { diagnostics = { globals = { "vim" } } } }
+	settings = { Lua = { diagnostics = { globals = { "vim" } } } },
 })
 vim.lsp.config("pyright", {})
 vim.lsp.config("ts_ls", {})
@@ -114,7 +118,7 @@ vim.lsp.enable({ "lua_ls", "pyright", "ts_ls" })
 -- ========================================================================== --
 -- 5. GLOBAL OPTIONS & CORE SETTINGS                                          --
 -- ========================================================================== --
-vim.opt.termguicolors = true   
+vim.opt.termguicolors = true
 vim.opt.backupcopy = "yes"
 vim.opt.cursorline = true
 vim.opt.autoread = true
@@ -130,7 +134,14 @@ vim.opt.foldlevelstart = 99
 vim.opt.listchars = { tab = "| " }
 vim.opt.list = true
 
-vim.opt.wildignore:append({ "*/.git/*", "*/.idea/*", "*/.DS_Store/*", "*/node_modules/*", "*/coverage/*", "*/cdk.out/*" })
+vim.opt.wildignore:append({
+	"*/.git/*",
+	"*/.idea/*",
+	"*/.DS_Store/*",
+	"*/node_modules/*",
+	"*/coverage/*",
+	"*/cdk.out/*",
+})
 
 -- Markdown settings
 vim.g.vim_markdown_preview_github = 1
@@ -173,19 +184,18 @@ map("n", "<Leader>gb", ":Git blame<CR>", opts)
 
 -- Native LSP Event Keymaps (Replaces CoC mappings dynamically when LSP connects) [1]
 vim.api.nvim_create_autocmd("LspAttach", {
-  callback = function(args)
-    local bufnr = args.buf
-    local map_opts = { buffer = bufnr, silent = true }
+	callback = function(args)
+		local bufnr = args.buf
+		local map_opts = { buffer = bufnr, silent = true }
 
-    map("n", "gd", vim.lsp.buf.definition, map_opts)
-    map("n", "gt", vim.lsp.buf.type_definition, map_opts)
-    map("n", "gi", vim.lsp.buf.implementation, map_opts)
+		map("n", "gd", vim.lsp.buf.definition, map_opts)
+		map("n", "gt", vim.lsp.buf.type_definition, map_opts)
+		map("n", "gi", vim.lsp.buf.implementation, map_opts)
 
-    map("n", "gr", vim.lsp.buf.references, map_opts)
-    map("n", "<Leader>A", vim.diagnostic.goto_next, map_opts)
+		map("n", "gr", vim.lsp.buf.references, map_opts)
+		map("n", "<Leader>A", vim.diagnostic.goto_next, map_opts)
 
-    -- Native documentation hover (Replaces your complex legacy VimScript functions) [1]
-    map("n", "K", vim.lsp.buf.hover, map_opts)
-  end,
+		-- Native documentation hover (Replaces your complex legacy VimScript functions) [1]
+		map("n", "K", vim.lsp.buf.hover, map_opts)
+	end,
 })
-
