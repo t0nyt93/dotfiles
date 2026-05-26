@@ -1,23 +1,15 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
-DOTFILES="$HOME/dotfiles"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-mkdir -p "$HOME/.config"
+echo "=== Dotfiles Bootstrap ==="
+echo
 
-link() {
-    local src="$1"
-    local dst="$2"
+"${ROOT_DIR}/scripts/validate.sh"
+"${ROOT_DIR}/scripts/link.sh"
+"${ROOT_DIR}/scripts/bootstrap-nvim.sh"
 
-    if [ -L "$dst" ]; then
-        rm "$dst"
-    fi
-
-    ln -sf "$src" "$dst"
-}
-
-link "$DOTFILES/nvim" "$HOME/.config/nvim"
-link "$DOTFILES/tmux/.tmux.conf" "$HOME/.tmux.conf"
-
-echo "Done"
+echo
+echo "[+] Bootstrap complete"
