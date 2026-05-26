@@ -1,10 +1,4 @@
--- ========================================================================== --
--- 1. GLOBAL INITIALIZATION & BOOTSTRAP                                       --
--- ========================================================================== --
-vim.g.mapleader = ","
-vim.g.maplocalleader = ","
-
--- Load your basic lazy bootstrap if you have one inside config/lazy
+-- Load our LAZY config from /lua/config/lazy.lua
 pcall(require, "config.lazy")
 
 -- ========================================================================== --
