@@ -6,8 +6,9 @@ return {
     dependencies = { "williamboman/mason.nvim" },
     opts = {
       ensure_installed = {
-        "stylua",    -- Formatter for Lua
-        "prettier",  -- Formatter for JS/TS/HTML/CSS/Markdown
+        "stylua",       -- Formatter for Lua
+        "prettier",     -- Formatter for JS/TS/HTML/CSS/Markdown
+        "clang-format", -- Formatter for C/C++
       },
     },
   },
@@ -27,6 +28,8 @@ return {
           markdown = { "prettier" },
           html = { "prettier" },
           css = { "prettier" },
+          c = { "clang-format" },
+          cpp = { "clang-format" },
         },
         -- Automatically format when you save the file
         format_on_save = {

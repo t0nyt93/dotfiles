@@ -1,8 +1,13 @@
 return {
-  "EdenEast/nightfox.nvim",
-  lazy = false,    -- Load this immediately on startup
-  priority = 1000, -- Load this before all other plugins
-  config = function()
-    vim.cmd.colorscheme("nightfox")
-  end,
+	{
+		"catppuccin/nvim",
+		name = "catppuccin",
+		lazy = false,
+		priority = 1000,
+		config = function()
+			vim.cmd.colorscheme("catppuccin-macchiato")
+		end,
+	},
+	{ "sainnhe/edge", lazy = true },
+	{ "EdenEast/nightfox.nvim", lazy = true },
 }

@@ -19,6 +19,7 @@ export AWS_PROFILE=adept-tony
 export AWS_REGION=us-west-2
 export ACCOUNT_ALIAS=adept-tony
 export NODE_OPTIONS=--max-old-space-size=8192
+export TERM_COLOR=truecolor
 
 alias gitp="git log --pretty=oneline"
 alias ctags='/usr/local/bin/ctags'
