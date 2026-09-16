@@ -5,3 +5,6 @@ zsh/.zshrc_keys
 zsh/.zshrc_local
 
 zellij/plugins/*
+
+.DS_Store
+**/.DS_Store

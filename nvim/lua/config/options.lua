@@ -6,7 +6,7 @@ vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 vim.opt.encoding = "utf-8"
-vim.opt.updatetime = 2000
+vim.opt.updatetime = 250
 vim.opt.relativenumber = true
 vim.opt.foldmethod = "indent"
 vim.opt.foldcolumn = "1"
@@ -24,6 +24,9 @@ vim.opt.wildignore:append({
 })
 
 vim.g.vim_markdown_preview_github = 1
-vim.g.vim_markdown_preview_browser = "Brave Browser"
+vim.g.vim_markdown_preview_browser = "Google Chrome"
 vim.g.mkdp_echo_preview_url = 1
-vim.g.vim_markdown_preview_hotkey = "<C-m>"
+-- Disable the plugin's built-in hotkey; bound via <F5> in keymaps.lua.
+-- (Avoids <C-m>, which is indistinguishable from <CR>/Enter in a terminal.
+--  Empty string would break the plugin's startup autocmd, so use a <Plug> no-op.)
+vim.g.vim_markdown_preview_hotkey = "<Plug>NoMarkdownPreviewHotkey"
